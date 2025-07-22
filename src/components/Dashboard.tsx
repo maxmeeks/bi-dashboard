@@ -51,8 +51,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 }) => {
 	return (
 		<div className={cn("pb-6 border-b border-surface-200 mb-6", className)}>
-			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-				<div>
+			<div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+				<div className="flex flex-col items-start">
 					<h1 className="text-3xl font-bold text-surface-900">
 						{title}
 					</h1>

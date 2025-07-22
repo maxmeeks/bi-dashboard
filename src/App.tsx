@@ -14,10 +14,11 @@ import {
 } from "./components";
 import { Grid, GridItem } from "./components";
 import {
-	mockChartData,
-	mockDashboardSummary,
-	mockLocationMetrics,
-	mockTypeMetrics,
+	mockSamples,
+	generateChartData,
+	generateDashboardSummary,
+	generateLocationMetrics,
+	generateTypeMetrics,
 	type DateRange,
 } from "./data";
 import "./App.css";
@@ -42,10 +43,11 @@ function App() {
 		endDate: new Date().toISOString().split("T")[0],
 	});
 
-	const summary = mockDashboardSummary;
-	const chartData = mockChartData;
-	const locationMetrics = mockLocationMetrics;
-	const typeMetrics = mockTypeMetrics;
+	// Generate data based on current date range
+	const summary = generateDashboardSummary(mockSamples, dateRange);
+	const chartData = generateChartData(mockSamples, 30, dateRange);
+	const locationMetrics = generateLocationMetrics(mockSamples, dateRange);
+	const typeMetrics = generateTypeMetrics(mockSamples, dateRange);
 
 	return (
 		<Dashboard>
@@ -59,8 +61,8 @@ function App() {
 
 			{/* Key Metrics Overview */}
 			<section className="mb-8">
-				<h2 className="text-xl font-semibold text-surface-900 mb-4">
-					Today's Overview
+				<h2 className="text-xl font-semibold text-slate-900 mb-4">
+					Selected Period Overview
 				</h2>
 				<Grid cols={{ sm: 2, lg: 4 }} gap="lg">
 					<GridItem>
@@ -70,7 +72,7 @@ function App() {
 							change={{
 								value: summary.changes.totalSamples.value,
 								type: summary.changes.totalSamples.type,
-								period: "vs yesterday",
+								period: "vs previous period",
 							}}
 						/>
 					</GridItem>
@@ -81,7 +83,7 @@ function App() {
 							change={{
 								value: summary.changes.completed.value,
 								type: summary.changes.completed.type,
-								period: "vs yesterday",
+								period: "vs previous period",
 							}}
 						/>
 					</GridItem>
@@ -96,7 +98,7 @@ function App() {
 									"increase"
 										? "decrease"
 										: "increase", // Inverted because lower is better
-								period: "vs yesterday",
+								period: "vs previous period",
 							}}
 						/>
 					</GridItem>
@@ -107,7 +109,7 @@ function App() {
 							change={{
 								value: summary.changes.onTimeRate.value,
 								type: summary.changes.onTimeRate.type,
-								period: "vs yesterday",
+								period: "vs previous period",
 							}}
 						/>
 					</GridItem>
@@ -116,7 +118,7 @@ function App() {
 
 			{/* Charts Section */}
 			<section className="mb-8">
-				<h2 className="text-xl font-semibold text-surface-900 mb-4">
+				<h2 className="text-xl font-semibold text-slate-900 mb-4">
 					Trends & Patterns
 				</h2>
 				<DashboardGrid>
@@ -139,7 +141,7 @@ function App() {
 
 			{/* Detailed Breakdown Tables */}
 			<section className="mb-8">
-				<h2 className="text-xl font-semibold text-surface-900 mb-4">
+				<h2 className="text-xl font-semibold text-slate-900 mb-4">
 					Performance Breakdown
 				</h2>
 				<DashboardGrid>
@@ -176,36 +178,36 @@ function App() {
 
 			{/* Mobile-Optimized Additional Metrics */}
 			<section className="lg:hidden mb-8">
-				<h2 className="text-xl font-semibold text-surface-900 mb-4">
+				<h2 className="text-xl font-semibold text-slate-900 mb-4">
 					Quick Stats
 				</h2>
 				<div className="space-y-4">
-					<div className="bg-white rounded-lg border border-surface-200 p-4">
+					<div className="bg-white rounded-lg border border-slate-200 p-4">
 						<div className="flex justify-between items-center">
-							<span className="text-sm font-medium text-surface-600">
+							<span className="text-sm font-medium text-slate-600">
 								Peak Processing Hour
 							</span>
-							<span className="text-lg font-bold text-surface-900">
+							<span className="text-lg font-bold text-slate-900">
 								2:00 PM
 							</span>
 						</div>
 					</div>
-					<div className="bg-white rounded-lg border border-surface-200 p-4">
+					<div className="bg-white rounded-lg border border-slate-200 p-4">
 						<div className="flex justify-between items-center">
-							<span className="text-sm font-medium text-surface-600">
+							<span className="text-sm font-medium text-slate-600">
 								Most Active Location
 							</span>
-							<span className="text-lg font-bold text-surface-900">
+							<span className="text-lg font-bold text-slate-900">
 								Main Lab
 							</span>
 						</div>
 					</div>
-					<div className="bg-white rounded-lg border border-surface-200 p-4">
+					<div className="bg-white rounded-lg border border-slate-200 p-4">
 						<div className="flex justify-between items-center">
-							<span className="text-sm font-medium text-surface-600">
+							<span className="text-sm font-medium text-slate-600">
 								Top Sample Type
 							</span>
-							<span className="text-lg font-bold text-surface-900">
+							<span className="text-lg font-bold text-slate-900">
 								Blood Chemistry
 							</span>
 						</div>
@@ -214,9 +216,9 @@ function App() {
 			</section>
 
 			{/* Footer */}
-			<footer className="mt-12 pt-8 border-t border-surface-200">
-				<div className="flex flex-col sm:flex-row justify-between items-center text-sm text-surface-500">
-					<p>© 2024 Lab Throughput Dashboard. All rights reserved.</p>
+			<footer className="mt-12 pt-8 border-t border-slate-200">
+				<div className="flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
+					<p>© 2025 Lab Throughput Dashboard. All rights reserved.</p>
 					<p className="mt-2 sm:mt-0">
 						Last updated: {new Date().toLocaleString()}
 					</p>

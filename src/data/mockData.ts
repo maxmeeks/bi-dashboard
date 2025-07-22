@@ -161,12 +161,27 @@ export const generateMockSamples = (days: number = 90): LabSample[] => {
 // Generate chart data from samples
 export const generateChartData = (
 	samples: LabSample[],
-	days: number = 30
+	days: number = 30,
+	dateRange?: { startDate: string; endDate: string }
 ): ChartDataPoint[] => {
 	const chartData: ChartDataPoint[] = [];
-	const endDate = new Date();
-	const startDate = new Date();
-	startDate.setDate(endDate.getDate() - days);
+
+	let endDate: Date;
+	let startDate: Date;
+
+	if (dateRange) {
+		startDate = new Date(dateRange.startDate);
+		endDate = new Date(dateRange.endDate);
+		days =
+			Math.ceil(
+				(endDate.getTime() - startDate.getTime()) /
+					(1000 * 60 * 60 * 24)
+			) + 1;
+	} else {
+		endDate = new Date();
+		startDate = new Date();
+		startDate.setDate(endDate.getDate() - days);
+	}
 
 	for (let day = 0; day < days; day++) {
 		const currentDate = new Date(startDate);
@@ -208,69 +223,103 @@ export const generateChartData = (
 
 // Generate dashboard summary
 export const generateDashboardSummary = (
-	samples: LabSample[]
+	samples: LabSample[],
+	dateRange?: { startDate: string; endDate: string }
 ): DashboardSummary => {
-	const today = new Date();
-	today.setHours(0, 0, 0, 0);
-	const tomorrow = new Date(today);
-	tomorrow.setDate(today.getDate() + 1);
+	let currentPeriodStart: Date;
+	let currentPeriodEnd: Date;
+	let previousPeriodStart: Date;
+	let previousPeriodEnd: Date;
 
-	const yesterday = new Date(today);
-	yesterday.setDate(today.getDate() - 1);
+	if (dateRange) {
+		// Use the selected date range
+		currentPeriodStart = new Date(dateRange.startDate);
+		currentPeriodEnd = new Date(dateRange.endDate);
+		currentPeriodEnd.setHours(23, 59, 59, 999);
 
-	const todaySamples = samples.filter(
+		// Calculate previous period of same length for comparison
+		const periodLength = Math.ceil(
+			(currentPeriodEnd.getTime() - currentPeriodStart.getTime()) /
+				(1000 * 60 * 60 * 24)
+		);
+		previousPeriodEnd = new Date(currentPeriodStart);
+		previousPeriodEnd.setDate(previousPeriodEnd.getDate() - 1);
+		previousPeriodEnd.setHours(23, 59, 59, 999);
+		previousPeriodStart = new Date(previousPeriodEnd);
+		previousPeriodStart.setDate(
+			previousPeriodStart.getDate() - periodLength + 1
+		);
+		previousPeriodStart.setHours(0, 0, 0, 0);
+	} else {
+		// Default to today vs yesterday
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const tomorrow = new Date(today);
+		tomorrow.setDate(today.getDate() + 1);
+		const yesterday = new Date(today);
+		yesterday.setDate(today.getDate() - 1);
+
+		currentPeriodStart = today;
+		currentPeriodEnd = tomorrow;
+		previousPeriodStart = yesterday;
+		previousPeriodEnd = today;
+	}
+
+	const currentSamples = samples.filter(
 		(sample) =>
-			sample.submissionDate >= today && sample.submissionDate < tomorrow
+			sample.submissionDate >= currentPeriodStart &&
+			sample.submissionDate < currentPeriodEnd
 	);
 
-	const yesterdaySamples = samples.filter(
+	const previousSamples = samples.filter(
 		(sample) =>
-			sample.submissionDate >= yesterday && sample.submissionDate < today
+			sample.submissionDate >= previousPeriodStart &&
+			sample.submissionDate < previousPeriodEnd
 	);
 
-	const completedToday = todaySamples.filter(
+	const completedCurrent = currentSamples.filter(
 		(sample) => sample.status === "completed"
 	);
-	const completedYesterday = yesterdaySamples.filter(
+	const completedPrevious = previousSamples.filter(
 		(sample) => sample.status === "completed"
 	);
 
-	const avgProcessingTimeToday =
-		completedToday.length > 0
-			? completedToday.reduce(
+	const avgProcessingTimeCurrent =
+		completedCurrent.length > 0
+			? completedCurrent.reduce(
 					(sum, sample) => sum + (sample.processingTimeMinutes || 0),
 					0
-			  ) / completedToday.length
+			  ) / completedCurrent.length
 			: 0;
 
-	const avgProcessingTimeYesterday =
-		completedYesterday.length > 0
-			? completedYesterday.reduce(
+	const avgProcessingTimePrevious =
+		completedPrevious.length > 0
+			? completedPrevious.reduce(
 					(sum, sample) => sum + (sample.processingTimeMinutes || 0),
 					0
-			  ) / completedYesterday.length
+			  ) / completedPrevious.length
 			: 0;
 
-	const onTimeToday =
-		(completedToday.filter(
+	const onTimeCurrent =
+		(completedCurrent.filter(
 			(sample) => (sample.processingTimeMinutes || 0) <= 120
 		).length /
-			Math.max(completedToday.length, 1)) *
+			Math.max(completedCurrent.length, 1)) *
 		100;
 
-	const onTimeYesterday =
-		(completedYesterday.filter(
+	const onTimePrevious =
+		(completedPrevious.filter(
 			(sample) => (sample.processingTimeMinutes || 0) <= 120
 		).length /
-			Math.max(completedYesterday.length, 1)) *
+			Math.max(completedPrevious.length, 1)) *
 		100;
 
 	const calculateChange = (
-		today: number,
-		yesterday: number
+		current: number,
+		previous: number
 	): { value: number; type: "increase" | "decrease" } => {
 		const change =
-			yesterday === 0 ? 0 : ((today - yesterday) / yesterday) * 100;
+			previous === 0 ? 0 : ((current - previous) / previous) * 100;
 		return {
 			value: Math.abs(Math.round(change)),
 			type: change >= 0 ? "increase" : "decrease",
@@ -278,24 +327,24 @@ export const generateDashboardSummary = (
 	};
 
 	return {
-		totalSamplesToday: todaySamples.length,
-		completedToday: completedToday.length,
-		averageProcessingTime: Math.round(avgProcessingTimeToday),
-		onTimeRate: Math.round(onTimeToday),
+		totalSamplesToday: currentSamples.length,
+		completedToday: completedCurrent.length,
+		averageProcessingTime: Math.round(avgProcessingTimeCurrent),
+		onTimeRate: Math.round(onTimeCurrent),
 		changes: {
 			totalSamples: calculateChange(
-				todaySamples.length,
-				yesterdaySamples.length
+				currentSamples.length,
+				previousSamples.length
 			),
 			completed: calculateChange(
-				completedToday.length,
-				completedYesterday.length
+				completedCurrent.length,
+				completedPrevious.length
 			),
 			processingTime: calculateChange(
-				avgProcessingTimeToday,
-				avgProcessingTimeYesterday
+				avgProcessingTimeCurrent,
+				avgProcessingTimePrevious
 			),
-			onTimeRate: calculateChange(onTimeToday, onTimeYesterday),
+			onTimeRate: calculateChange(onTimeCurrent, onTimePrevious),
 		},
 	};
 };
