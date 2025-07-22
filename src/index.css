@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design System Base Styles */
+@layer base {
+  :root {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-sans text-surface-900 bg-surface-50;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500;
+  }
+
+  /* Remove default button styles */
+  button {
+    font-family: inherit;
+  }
+
+  /* Ensure consistent box-sizing */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
+
+/* Design System Component Utilities */
+@layer components {
+  /* Card shadow utility */
+  .shadow-card {
+    box-shadow:
+      0 1px 3px 0 rgb(0 0 0 / 0.1),
+      0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .shadow-card-hover {
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  /* Animation utilities */
+  .transition-card {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  /* Typography utilities */
+  .text-heading {
+    @apply font-semibold text-surface-900;
+  }
+
+  .text-body {
+    @apply text-surface-700;
+  }
+
+  .text-caption {
+    @apply text-sm text-surface-500;
+  }
+}
