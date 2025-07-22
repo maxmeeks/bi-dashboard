@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
-import React from "react";
+
 import { Button, IconButton, ButtonGroup } from "../components/Button";
 
 const meta = {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "./Button";
 import { cn } from "../design-system";
 import type { LocationMetrics, TypeMetrics } from "../data";
@@ -20,6 +20,7 @@ interface Column<T> {
 	sortable?: boolean;
 	render?: (value: unknown, row: T) => React.ReactNode;
 	className?: string;
+	align?: "left" | "right" | "center";
 }
 
 interface DataTableProps<T> {
@@ -42,12 +43,24 @@ export function DataTable<T extends Record<string, any>>({
 		if (!sortField) return data;
 
 		return [...data].sort((a, b) => {
-			const aValue = a[sortField];
-			const bValue = b[sortField];
+			const aValue = (a as any)[sortField];
+			const bValue = (b as any)[sortField];
 
 			if (aValue === bValue) return 0;
 
-			const comparison = aValue < bValue ? -1 : 1;
+			// Type-safe comparison for different data types
+			if (typeof aValue === "string" && typeof bValue === "string") {
+				const comparison = aValue.localeCompare(bValue);
+				return sortDirection === "asc" ? comparison : -comparison;
+			}
+
+			if (typeof aValue === "number" && typeof bValue === "number") {
+				const comparison = aValue - bValue;
+				return sortDirection === "asc" ? comparison : -comparison;
+			}
+
+			// Fallback for other types
+			const comparison = String(aValue) < String(bValue) ? -1 : 1;
 			return sortDirection === "asc" ? comparison : -comparison;
 		});
 	}, [data, sortField, sortDirection]);
@@ -156,8 +169,13 @@ export function DataTable<T extends Record<string, any>>({
 									)}
 								>
 									{column.render
-										? column.render(row[column.key], row)
-										: String(row[column.key] || "-")}
+										? column.render(
+												(row as any)[column.key],
+												row
+										  )
+										: String(
+												(row as any)[column.key] || "-"
+										  )}
 								</td>
 							))}
 						</tr>
@@ -230,7 +248,9 @@ export const LocationMetricsTable: React.FC<LocationMetricsTableProps> = ({
 			label: "Location",
 			sortable: true,
 			render: (value) => (
-				<div className="font-medium text-surface-900">{value}</div>
+				<div className="font-medium text-surface-900">
+					{value as string}
+				</div>
 			),
 		},
 		{
@@ -239,7 +259,7 @@ export const LocationMetricsTable: React.FC<LocationMetricsTableProps> = ({
 			sortable: true,
 			render: (value) => (
 				<span className="text-surface-900">
-					{value.toLocaleString()}
+					{(value as number).toLocaleString()}
 				</span>
 			),
 		},
@@ -248,7 +268,7 @@ export const LocationMetricsTable: React.FC<LocationMetricsTableProps> = ({
 			label: "Avg Processing Time",
 			sortable: true,
 			render: (value) => (
-				<span className="text-surface-600">{value} min</span>
+				<span className="text-surface-600">{value as number} min</span>
 			),
 		},
 		{
@@ -256,7 +276,10 @@ export const LocationMetricsTable: React.FC<LocationMetricsTableProps> = ({
 			label: "Utilization Rate",
 			sortable: true,
 			render: (value) => (
-				<ProgressBar value={value} className="min-w-[120px]" />
+				<ProgressBar
+					value={value as number}
+					className="min-w-[120px]"
+				/>
 			),
 			className: "min-w-[150px]",
 		},
@@ -290,7 +313,9 @@ export const TypeMetricsTable: React.FC<TypeMetricsTableProps> = ({
 			label: "Sample Type",
 			sortable: true,
 			render: (value) => (
-				<div className="font-medium text-surface-900">{value}</div>
+				<div className="font-medium text-surface-900">
+					{value as string}
+				</div>
 			),
 		},
 		{
@@ -299,7 +324,7 @@ export const TypeMetricsTable: React.FC<TypeMetricsTableProps> = ({
 			sortable: true,
 			render: (value) => (
 				<span className="text-surface-900">
-					{value.toLocaleString()}
+					{(value as number).toLocaleString()}
 				</span>
 			),
 		},
@@ -308,7 +333,7 @@ export const TypeMetricsTable: React.FC<TypeMetricsTableProps> = ({
 			label: "Avg Processing Time",
 			sortable: true,
 			render: (value) => (
-				<span className="text-surface-600">{value} min</span>
+				<span className="text-surface-600">{value as number} min</span>
 			),
 		},
 		{
@@ -317,7 +342,7 @@ export const TypeMetricsTable: React.FC<TypeMetricsTableProps> = ({
 			sortable: true,
 			render: (value) => (
 				<ProgressBar
-					value={value}
+					value={value as number}
 					className="min-w-[120px]"
 					showLabel={true}
 				/>

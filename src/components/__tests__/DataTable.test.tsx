@@ -1,6 +1,8 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/dom";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
+declare const global: any;
 import {
 	DataTable,
 	ProgressBar,

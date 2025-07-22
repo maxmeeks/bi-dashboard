@@ -32,7 +32,9 @@ export interface ComponentStyleProps {
 }
 
 // Card component props
-export interface CardProps extends ComponentStyleProps {
+export interface CardProps
+	extends ComponentStyleProps,
+		React.HTMLAttributes<HTMLDivElement> {
 	variant?: "default" | "elevated" | "outlined";
 	padding?: SpacingSize;
 	children: React.ReactNode;

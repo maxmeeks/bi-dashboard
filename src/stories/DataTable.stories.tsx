@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React from "react";
+
 import { DataTable } from "../components/DataTable";
 import { mockLocationMetrics, mockTypeMetrics } from "../data/mockData";
 
@@ -58,8 +58,6 @@ export const LocationBreakdown: Story = {
 				align: "right",
 			},
 		],
-		progressColumn: "progress",
-		title: "Laboratory Location Breakdown",
 	},
 };
 
@@ -87,8 +85,6 @@ export const SampleTypeBreakdown: Story = {
 				align: "right",
 			},
 		],
-		progressColumn: "progress",
-		title: "Sample Type Performance",
 	},
 };
 
@@ -109,7 +105,6 @@ export const SimpleTable: Story = {
 				align: "right",
 			},
 		],
-		title: "Basic Sample List",
 	},
 };
 
@@ -144,9 +139,6 @@ export const WithExportFeature = {
 						align: "right",
 					},
 				]}
-				progressColumn="progress"
-				title="Laboratory Performance Report"
-				showExport={true}
 			/>
 		</div>
 	),
@@ -164,6 +156,5 @@ export const EmptyState: Story = {
 				align: "right",
 			},
 		],
-		title: "No Data Available",
 	},
 };

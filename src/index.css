@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Design System Base Styles */
 @layer base {
@@ -12,7 +10,7 @@
   }
 
   body {
-    @apply font-sans text-surface-900 bg-surface-50;
+    @apply font-sans text-slate-900 bg-slate-50;
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
@@ -20,7 +18,7 @@
 
   /* Focus styles for accessibility */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-500;
+    @apply outline-2 outline-offset-2 outline-blue-500;
   }
 
   /* Remove default button styles */
@@ -58,14 +56,14 @@
 
   /* Typography utilities */
   .text-heading {
-    @apply font-semibold text-surface-900;
+    @apply font-semibold text-slate-900;
   }
 
   .text-body {
-    @apply text-surface-700;
+    @apply text-slate-700;
   }
 
   .text-caption {
-    @apply text-sm text-surface-500;
+    @apply text-sm text-slate-500;
   }
 }

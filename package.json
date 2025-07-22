@@ -16,6 +16,8 @@
 	},
 	"dependencies": {
 		"@headlessui/react": "^2.2.4",
+		"@tailwindcss/vite": "^4.1.11",
+		"@testing-library/dom": "^10.4.0",
 		"clsx": "^2.1.1",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
@@ -27,6 +29,7 @@
 		"@storybook/addon-docs": "^9.0.18",
 		"@storybook/addon-onboarding": "^9.0.18",
 		"@storybook/react-vite": "^9.0.18",
+		"@tailwindcss/postcss": "^4.1.11",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.3.0",
 		"@testing-library/user-event": "^14.6.1",
