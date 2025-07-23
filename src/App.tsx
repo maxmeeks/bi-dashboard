@@ -218,7 +218,7 @@ function App() {
 			{/* Footer */}
 			<footer className="mt-12 pt-8 border-t border-slate-200">
 				<div className="flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500">
-					<p>© 2025 Lab Throughput Dashboard. All rights reserved.</p>
+					<p>© 2025 Max Meekhoff. All rights reserved.</p>
 					<p className="mt-2 sm:mt-0">
 						Last updated: {new Date().toLocaleString()}
 					</p>

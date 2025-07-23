@@ -1,5 +1,5 @@
 // Design System Exports
-export * from "./tokens";
+export * from "./tokens.js";
 export * from "./types";
 export * from "./utils";
 
@@ -18,4 +18,4 @@ export {
 	fontSize,
 	borderRadius,
 	componentSizes,
-} from "./tokens";
+} from "./tokens.js";
